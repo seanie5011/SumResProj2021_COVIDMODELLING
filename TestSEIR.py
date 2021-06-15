@@ -5,7 +5,7 @@ import scipy as sp
 import matplotlib.pyplot as plt
 
 
-#---SIR Code---#
+#---SEIR Code---#
 icdict = {'s': 0.999, 'ex': 0, 'i': 0.001, 'r': 0} 
 pardict = {'beta': 2.4/14, 'D': 14, 'L': 5, 'N': 1}
 
