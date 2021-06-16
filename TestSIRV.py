@@ -27,7 +27,7 @@ DS = dst.Generator.Vode_ODEsystem(DSargs)
 
 DS.set(pars={'beta': 5/14, 'N': 4900000, 'rho': (67000/7)/4900000}, #67000 vaccinated a week
        ics={'s': 4899999, 'i': 1},
-       tdata = [0, 250])
+       tdata = [0, 1000])
 
 traj = DS.compute('demo')
 pts = traj.sample()
