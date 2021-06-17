@@ -4,7 +4,7 @@ import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
 
-#This will include a second variant, the UK (alpha) variant
+#This will include a second variant, the UK (alpha) variant, and a third variant, the Indian (Delta) variant.
 
 #---SIR Code---#
 icdict = {'s': 0.999, 'i1': 0.0003, 'i2': 0.0003, 'i3': 0.0003, 'r': 0} 

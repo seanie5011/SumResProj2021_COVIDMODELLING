@@ -4,7 +4,7 @@ import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
 
-#this model will include vaccination, birth/death rates, imports, contact rates and immunity percentage
+#this model will include multiple variants, vaccination, birth/death rates, imports, contact rates and immunity percentage
 
 #---SEIR Code---#
 icdict = {'s': 0.999, 'ex1': 0, 'i1': 0.0003, 'ex2': 0, 'i2': 0.0003, 'ex3': 0, 'i3': 0.0003, 'r': 0} 
