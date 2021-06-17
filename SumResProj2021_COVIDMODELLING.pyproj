@@ -5,7 +5,7 @@
     <ProjectGuid>287a1695-04a2-4474-9dc6-c2e07fa4a0b9</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>SEIRplus.py</StartupFile>
+    <StartupFile>SEIRplusMultVariants.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -24,6 +24,12 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="SEIRMultipleVariants.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SEIRplusMultVariants.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SEIRplus.py">
       <SubType>Code</SubType>
     </Compile>
