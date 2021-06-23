@@ -9,24 +9,26 @@ import matplotlib.pyplot as plt
 icdict = {'s': 0.999, 'i': 0.001, 'r': 0, 'v': 0} 
 pardict = {'beta': 2.4/14, 'D': 14, 'L': 5, 'N': 1, 'rho': 0}
 
-ds_rhs = '-beta * (i/N) * s - rho * s' #divide by N to ensure it is a fraction
+ds_rhs = '-beta * (i/N) * s - rho' #divide by N to ensure it is a fraction
 di_rhs = 'beta * (i/N) * s - ((1/D) * i)'
 dr_rhs = '(1/D) * i'
-dv_rhs = 'rho * s'
+dv_rhs = 'rho'
 
 vardict = {'s': ds_rhs, 'i': di_rhs, 'r': dr_rhs, 'v': dv_rhs} 
 
 DSargs = dst.args() 
 DSargs.name = 'SIRV'
 DSargs.ics = icdict 
-DSargs.pars = pardict 
+DSargs.pars = pardict
 DSargs.tdata = [0, 20] 
 DSargs.varspecs = vardict
+DSargs.xdomain = {'s': [0,4900000], 'i': [0,4900000], 'r': [0,4900000], 'v': [0,4900000]}
 
 DS = dst.Generator.Vode_ODEsystem(DSargs)
 
-DS.set(pars={'beta': 5/14, 'N': 4900000, 'rho': (67000/7)/4900000}, #67000 vaccinated a week
+DS.set(pars={'beta': 5/14, 'N': 4900000, 'rho': (67000/7)}, #67000 vaccinated a week
        ics={'s': 4899999, 'i': 1},
+       xdomain = {'s': [0,4900000], 'i': [0,4900000], 'r': [0,4900000], 'v': [0,4900000]},
        tdata = [0, 1000])
 
 traj = DS.compute('demo')

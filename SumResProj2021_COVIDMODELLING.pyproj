@@ -5,7 +5,7 @@
     <ProjectGuid>287a1695-04a2-4474-9dc6-c2e07fa4a0b9</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>SEIRplusMultVariants.py</StartupFile>
+    <StartupFile>ReplicatingDanielsWork.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -24,6 +24,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ReplicatingDanielsWork.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SEIRMultipleVariants.py">
       <SubType>Code</SubType>
     </Compile>
@@ -34,6 +37,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SIRMultipleVariants.py" />
+    <Compile Include="TestSIRVexp.py" />
     <Compile Include="TestSIRV.py">
       <SubType>Code</SubType>
     </Compile>

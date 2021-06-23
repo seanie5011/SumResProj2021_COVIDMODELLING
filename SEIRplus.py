@@ -21,14 +21,14 @@ DSargs = dst.args()
 DSargs.name = 'SEIR'
 DSargs.ics = icdict 
 DSargs.pars = pardict 
-DSargs.tdata = [0, 20] 
+DSargs.tdata = [0, 10] 
 DSargs.varspecs = vardict
 
 DS = dst.Generator.Vode_ODEsystem(DSargs)
 
-DS.set(pars={'beta': 3/10, 'N': 4900000, 'rho': (67000/7)/4900000, 'mu': 157/4900000, 'delta': 150/7}, #mu decided by rounding ((14371*4)/365)/4900000, amount of births gotten from quarterly report by CSO, delta is 1000 people per week
+DS.set(pars={'beta': 3/10, 'N': 4900000, 'rho': (67000/7)/4900000, 'mu': 157/4900000, 'delta': 40/7}, #mu decided by rounding ((14371*4)/365)/4900000, amount of births gotten from quarterly report by CSO, delta is 1000 people per week
        ics={'s': 4900000, 'ex': 0, 'i': 0, 'r': 0},
-       tdata=[0, 17])
+       tdata=[0, 10])
 
 traj = DS.compute('demo')
 pts = traj.sample()
@@ -50,23 +50,67 @@ pts = traj.sample()
 s_frac = pts['s']/DS.pars['N']
 Reff = s_frac * DS.pars['beta'] * DS.pars['D']
 
-total_cases = np.add(pts['i'], pts['r']) #adding current cases to previous cases (assuming no vaccination)
+subtotal_cases = np.add(np.add(pts['i'], pts['ex']), pts['r'])
+#total_cases = np.add(subtotal_cases, pts['r']) #incliuding exposed in total cases
+#total_cases = np.add(pts['i'], pts['r']) #adding current cases to previous cases (assuming no vaccination)
 
-#print(pts['s'][-1])
-#print(pts['ex'][-1])
-#print(pts['i'][-1])
-#print(pts['r'][-1])
+s_1 = pts['s'][-1]
+ex_1 = pts['ex'][-1]
+i_1 = pts['i'][-1]
+r_1 = pts['r'][-1]
+
+#set again to redo
+DS.set(pars={'beta': 3/10, 'N': 4900000, 'rho': (67000/7)/4900000, 'mu': 157/4900000, 'delta': 150/7, 'C': 1.2}, #mu decided by rounding ((14371*4)/365)/4900000, amount of births gotten from quarterly report by CSO, delta is 1000 people per week
+       ics={'s': s_1, 'ex': ex_1, 'i': i_1, 'r': r_1},
+       tdata=[10, 20])
+
+traj1 = DS.compute('demo')
+pts1 = traj1.sample()
+
+subtotal_cases1 = np.add(np.add(pts1['i'], pts1['ex']), pts1['r'])
+
+s_2 = pts1['s'][-1]
+ex_2 = pts1['ex'][-1]
+i_2 = pts1['i'][-1]
+r_2 = pts1['r'][-1]
+
+#set again to redo
+DS.set(pars={'beta': 3/10, 'N': 4900000, 'rho': (67000/7)/4900000, 'mu': 157/4900000, 'delta': 100/7, 'C': 1}, #mu decided by rounding ((14371*4)/365)/4900000, amount of births gotten from quarterly report by CSO, delta is 1000 people per week
+       ics={'s': s_2, 'ex': ex_2, 'i': i_2, 'r': r_2},
+       tdata=[20, 30])
+
+traj2 = DS.compute('demo')
+pts2 = traj2.sample()
+#total imported cases by now is 414
+subtotal_cases2 = np.add(np.add(pts2['i'], pts2['ex']), pts2['r'])
+
+s_3 = pts2['s'][-1]
+ex_3 = pts2['ex'][-1]
+i_3 = pts2['i'][-1]
+r_3 = pts2['r'][-1]
+
+#set again to redo
+DS.set(pars={'beta': 3/10, 'N': 4900000, 'rho': (67000/7)/4900000, 'mu': 157/4900000, 'delta': 20/7, 'C': 0.2}, #mu decided by rounding ((14371*4)/365)/4900000, amount of births gotten from quarterly report by CSO, delta is 1000 people per week
+       ics={'s': s_3, 'ex': ex_3, 'i': i_3, 'r': r_3},
+       tdata=[30, 90])
+
+traj3 = DS.compute('demo')
+pts3 = traj3.sample()
+#total imported cases by now is 414
+subtotal_cases3 = np.add(np.add(pts3['i'], pts3['ex']), pts3['r'])
+total_cases = np.concatenate((subtotal_cases, subtotal_cases1, subtotal_cases2, subtotal_cases3))
+total_time = np.concatenate((pts['t'], pts1['t'], pts2['t'], pts3['t']))
 
 #---Plotting---#
 plot1 = plt.figure(1)
 #plt.axline((0, 0), (250, 0), color = 'r', linestyle = (0, (5, 10)), linewidth = 0.5) #(0, (5, 10)) is a custom dashed line
 #plt.axline((0, 4900000), (250, 4900000), color = 'r', linestyle = (0, (5, 10)), linewidth = 0.5)
 #plt.plot(pts['t'], pts['s'], label='S')
-plt.plot(pts['t'], pts['ex'], label='E')
-plt.plot(pts['t'], pts['i'], label='I')
+#plt.plot(pts['t'], pts['ex'], label='E')
+#plt.plot(pts['t'], pts['i'], label='I')
 #plt.plot(pts['t'], pts['r'], label='R')
-#plt.plot(pts['t'], total_cases, label='Total Cases')
-#plt.xlim(0, max_time) #limits max and min x-axis shown
+plt.plot(total_time, total_cases, label='Total Cases')
+#plt.xlim(0, 250) #limits max and min x-axis shown
 #plt.ylim(0, 5000000)
 plt.legend()
 plt.xlabel('t')
