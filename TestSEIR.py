@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 #---SEIR Code---#
 icdict = {'s': 0.999, 'ex': 0, 'i': 0.001, 'r': 0} 
-pardict = {'beta': 2.4/14, 'D': 14, 'L': 5, 'N': 1}
+pardict = {'beta': 2.4/14, 'D': 10, 'L': 4.7, 'N': 1}
 
 ds_rhs = '-beta * (i/N) * s' #divide by N to ensure it is a fraction
 de_rhs = 'beta * (i/N) * s - ((1/L) * ex)'
@@ -25,9 +25,9 @@ DSargs.varspecs = vardict
 
 DS = dst.Generator.Vode_ODEsystem(DSargs)
 
-DS.set(pars={'beta': 5/14, 'N': 4900000},
-       ics={'s': 4899999, 'i': 1},
-       tdata = [0, 250])
+DS.set(pars={'beta': 3.332/10, 'N': 4900000},
+       ics={'s': 4899900, 'i': 100},
+       tdata = [0, 100])
 
 traj = DS.compute('demo')
 pts = traj.sample()
