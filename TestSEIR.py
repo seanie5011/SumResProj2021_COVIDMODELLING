@@ -27,7 +27,7 @@ DS = dst.Generator.Vode_ODEsystem(DSargs)
 
 DS.set(pars={'beta': 3.332/10, 'N': 4900000},
        ics={'s': 4899900, 'i': 100},
-       tdata = [0, 100])
+       tdata = [0, 150])
 
 traj = DS.compute('demo')
 pts = traj.sample()
