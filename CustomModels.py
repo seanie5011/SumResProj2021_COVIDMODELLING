@@ -450,7 +450,7 @@ class SEIRMV():
         plt.show()
 
 class SEIRMVEx():
-    def __init__(self, start, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity):
+    def __init__(self, start, end, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, beta1, beta2, beta3, D, L, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity):
         self.T = end - start #T is the length of time, not end time
         self.timekeeper = start
         self.stepsize = 0.1 / self.T
@@ -466,6 +466,7 @@ class SEIRMVEx():
         self.E3 = np.array([E3])
         self.I3 = np.array([I3])
         self.R = np.array([R])
+        self.IV = np.array([IV])
         self.V = np.array([V])
         self.DC1 = np.array([E1 + I1])
         self.DC2 = np.array([E2 + I2])
@@ -486,24 +487,26 @@ class SEIRMVEx():
         self.C = C
         self.mu = mupop / self.N
         self.rho = rhoweek / 7.0
-        self.p = immunity
-        self.pkeeper = immunity
+        self.rhokeeper = np.array([self.rho])
+        self.p = 1 - immunity
 
     def calc(self):
-        S, E1, I1, E2, I2, E3, I3, R, V, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC = self.S[-1], self.E1[-1], self.I1[-1], self.E2[-1], self.I2[-1], self.E3[-1], self.I3[-1], self.R[-1], self.V[-1], self.Reff1[-1], self.Reff2[-1], self.Reff3[-1], self.DC1[-1], self.DC2[-1], self.DC3[-1], self.TDC[-1], self.TC[-1] #makes sure always adding to last in sequence
+        S, E1, I1, E2, I2, E3, I3, R, IV, V, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC = self.S[-1], self.E1[-1], self.I1[-1], self.E2[-1], self.I2[-1], self.E3[-1], self.I3[-1], self.R[-1], self.IV[-1], self.V[-1], self.Reff1[-1], self.Reff2[-1], self.Reff3[-1], self.DC1[-1], self.DC2[-1], self.DC3[-1], self.TDC[-1], self.TC[-1] #makes sure always adding to last in sequence
 
         for i in range(int(self.numsteps)):
             if S <= 0: #if cant vaccinate
-                self.p = 0
+                canvaccinate = 0
             else:
-                self.p = self.pkeeper #ensures goes back to vaccinating
-            S += self.stepsize * (-((self.beta1 * I1 + self.beta2 * I2 + self.beta3 * I3) * self.C * S / self.N) + (self.mu * (self.N - S)) - (self.rho * self.p))
-            V += self.stepsize * ((self.rho * self.p) - (self.mu * V))
-            E1 += self.stepsize * ((self.beta1 * self.C * S * I1/self.N) - ((1/self.L) * E1) + self.delta1 - (self.mu * E1))
+                canvaccinate = 1 #ensures goes back to vaccinating
+
+            S += self.stepsize * (-((self.beta1 * I1 + self.beta2 * I2 + self.beta3 * I3) * self.C * S / self.N) + (self.mu * (self.N - S)) - (self.rho * canvaccinate))
+            IV += self.stepsize * ((self.rho * canvaccinate) - ((self.beta1 * I1 + self.beta2 * I2 + self.beta3 * I3) * self.C * (IV * 0.5 * self.p) / self.N) - (self.mu * IV))
+            V += self.stepsize * ( - ((self.beta1 * I1 + self.beta2 * I2 + self.beta3 * I3) * self.C * (V * self.p) / self.N) - (self.mu * V))
+            E1 += self.stepsize * ((self.beta1 * self.C * (S + (0.5 * IV + V) * self.p) * I1/self.N) - ((1/self.L) * E1) + self.delta1 - (self.mu * E1))
             I1 += self.stepsize * (((1/self.L) * E1) - ((1/self.D) * I1) - (self.mu * I1))
-            E2 += self.stepsize * ((self.beta2 * self.C * S * I2/self.N) - ((1/self.L) * E2) + self.delta2 - (self.mu * E2))
+            E2 += self.stepsize * ((self.beta2 * self.C * (S + (0.5 * IV + V) * self.p) * I2/self.N) - ((1/self.L) * E2) + self.delta2 - (self.mu * E2))
             I2 += self.stepsize * (((1/self.L) * E2) - ((1/self.D) * I2) - (self.mu * I2))
-            E3 += self.stepsize * ((self.beta3 * self.C * S * I3/self.N) - ((1/self.L) * E3) + self.delta3 - (self.mu * E3))
+            E3 += self.stepsize * ((self.beta3 * self.C * (S + (0.5 * IV + V) * self.p) * I3/self.N) - ((1/self.L) * E3) + self.delta3 - (self.mu * E3))
             I3 += self.stepsize * (((1/self.L) * E3) - ((1/self.D) * I3) - (self.mu * I3))
             R += self.stepsize * (((1/self.D) * (I1 + I2 + I3)) - (self.mu * R))
             Reff1 = self.beta1 * self.D * S / self.N
@@ -520,6 +523,10 @@ class SEIRMVEx():
                 if self.t[self.timekeeper + self.wholenumber] > 100: #ensure time period is over recovery period
                     S += self.TDC[self.timekeeper + self.wholenumber - 100] #add back to susceptible
                     R -= self.TDC[self.timekeeper + self.wholenumber - 100]
+                if self.t[self.timekeeper + self.wholenumber] > 10: #ensure time period is over recovery period
+                    V += self.rhokeeper[self.timekeeper + self.wholenumber - 10] #add back to susceptible
+                    IV -= self.rhokeeper[self.timekeeper + self.wholenumber - 10]
+
                 self.S = np.append(self.S, S)
                 self.E1 = np.append(self.E1, E1)
                 self.I1 = np.append(self.I1, I1)
@@ -528,7 +535,9 @@ class SEIRMVEx():
                 self.E3 = np.append(self.E3, E3)
                 self.I3 = np.append(self.I3, I3)
                 self.R = np.append(self.R, R)
+                self.IV = np.append(self.IV, IV)
                 self.V = np.append(self.V, V)
+                self.rhokeeper = np.append(self.rhokeeper, self.rho)
                 self.Reff1 = np.append(self.Reff1, Reff1)
                 self.Reff2 = np.append(self.Reff2, Reff2)
                 self.Reff3 = np.append(self.Reff3, Reff3)
@@ -540,9 +549,9 @@ class SEIRMVEx():
 
                 self.wholenumber += 1
 
-        return self.t, self.N, self.S, self.E1, self.I1, self.E2, self.I2, self.E3, self.I3, self.R, self.V, self.Reff1, self.Reff2, self.Reff3, self.DC1, self.DC2, self.DC3, self.TDC, self.TC
+        return self.t, self.N, self.S, self.E1, self.I1, self.E2, self.I2, self.E3, self.I3, self.R, self.IV, self.V, self.rhokeeper, self.Reff1, self.Reff2, self.Reff3, self.DC1, self.DC2, self.DC3, self.TDC, self.TC
 
-    def reinitAdd(self, t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity): #reinits but adds to pre-existing arrays, then calcs it, used as an extension
+    def reinitAdd(self, t, end, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity): #reinits but adds to pre-existing arrays, then calcs it, used as an extension
         self.T = end - t[-1] #T is the length of time, not end time
         self.timekeeper = t[-1]
         self.stepsize = 0.1 / self.T
@@ -558,6 +567,7 @@ class SEIRMVEx():
         self.E3 = E3
         self.I3 = I3
         self.R = R
+        self.IV = IV
         self.V = V
         self.DC1 = DC1
         self.DC2 = DC2
@@ -578,8 +588,8 @@ class SEIRMVEx():
         self.C = C
         self.mu = mupop / self.N
         self.rho = rhoweek / 7.0
-        self.p = immunity
-        self.pkeeper = immunity
+        self.rhokeeper = rhokeeper
+        self.p = 1 - immunity
 
         return self.calc()
 
@@ -597,7 +607,7 @@ class SEIRMVEx():
         plt.plot(self.t, self.I2, color = "#F50480", label='I2')
         plt.plot(self.t, self.E3, color = "#CE6600", label='E3')
         plt.plot(self.t, self.I3, color = "#FF7F00", label='I3')
-        plt.plot(self.t, np.add(self.R, self.V), color = "#05A515", label='R + V')
+        plt.plot(self.t, np.add(np.add(self.R, self.V), self.IV), color = "#05A515", label='R + IV + V')
         plt.xlim(self.t[0], self.t[-1])
         #plt.ylim(0, RN)
         plt.legend()
@@ -652,6 +662,15 @@ class SEIRMVEx():
         plt.legend()
         plt.xlabel('Time in days')
         plt.ylabel('Total cases (Logarithmic)')
+
+        plot7 = plt.figure(7)
+        #plt.plot(self.t, self.V, color = "#05A515", label='V')
+        plt.plot(self.t, self.IV, color = "#C6BF00", label='IV')
+        plt.xlim(self.t[0], self.t[-1])
+        #plt.ylim(0, RN)
+        plt.legend()
+        plt.xlabel('Time in days')
+        plt.ylabel('Vaccinations')
 
         print("Total Population:", self.N)
 
@@ -835,10 +854,11 @@ class SEIRMVEx():
 
 #-Experimental-#
 
-model3 = SEIRMVEx(0, 400, 1000000, 1000000, 0, 0, 0, 0, 0, 0, 0, 0, 3.332/10, 0/10, 0/10, 10, 4.7, 100, 0, 0, 1, 157, 15000, 0.9) #start, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
-t, N, S, E1, I1, E2, I2, E3, I3, R, V, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC = model3.calc() #return self.t, self.N, self.S, self.E1, self.I1, self.E2, self.I2, self.E3, self.I3, self.R, self.V, self.Reff1, self.Reff2, self.Reff3, self.DC1, self.DC2, self.DC3, self.TDC, self.TC
+model3 = SEIRMVEx(0, 400, 1000000, 1000000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3.332/10, 0/10, 0/10, 10, 4.7, 100, 0, 0, 1, 157, 15000, 0.9) #start, end, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, beta1, beta2, beta3, D, L, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
+t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC = model3.calc() #return self.t, self.N, self.S, self.E1, self.I1, self.E2, self.I2, self.E3, self.I3, self.R, self.IV, self.V, self.rhokeeper, self.Reff1, self.Reff2, self.Reff3, self.DC1, self.DC2, self.DC3, self.TDC, self.TC
+t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC = model3.reinitAdd(t, 453, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 0/10, 0/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, 100, 0, 0, 1, 157, 30000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
 
-print("Total Vaccinated:", V[-1] / 0.9) #as vaccinated group is * 0.9 in calc, this gives number HSE use
+print("Total Vaccinated:", V[-1] + IV[-1]) 
 print("Susceptible left:", S[-1])
 print("Sum TDC:", np.sum(TDC))
 print("Total Delta variant:", np.sum(DC3))
