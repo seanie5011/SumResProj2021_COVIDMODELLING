@@ -511,7 +511,7 @@ class SEIRMVEx():
             deltaC = 0
 
         for i in range(int(self.numsteps)):
-            if self.N - (V + IV + self.VDCkeeper) <= 1100000: #if cant vaccinate
+            if self.N - (V + IV + self.VDCkeeper) <= 850000: #if cant vaccinate
                 self.rho = 0
             else:
                 self.rho = self.ogrho #ensures goes back to vaccinating with number given for this section
@@ -529,9 +529,9 @@ class SEIRMVEx():
             Reff1 = self.beta1 * self.C * self.D * (S + IV * self.p2 + V * self.p) / self.N
             Reff2 = self.beta2 * self.C * self.D * (S + IV * self.p2 + V * self.p) / self.N
             Reff3 = self.beta3 * self.C * self.D * (S + IV * self.p2 + V * self.p) / self.N
-            DC1 = (self.beta1 * self.C * S * I1 /self.N) + self.delta1 - (self.mu * (E1 + I1)) #keep an eye on the self.mu part
-            DC2 = (self.beta2 * self.C * S * I2 /self.N) + self.delta2 - (self.mu * (E2 + I2))
-            DC3 = (self.beta3 * self.C * S * I3 /self.N) + self.delta3 - (self.mu * (E3 + I3))
+            DC1 = (self.beta1 * self.C * (S + IV * self.p2 + V * self.p) * I1 /self.N) + self.delta1 - (self.mu * (E1 + I1)) #keep an eye on the self.mu part
+            DC2 = (self.beta2 * self.C * (S + IV * self.p2 + V * self.p) * I2 /self.N) + self.delta2 - (self.mu * (E2 + I2))
+            DC3 = (self.beta3 * self.C * (S + IV * self.p2 + V * self.p) * I3 /self.N) + self.delta3 - (self.mu * (E3 + I3))
             VDC = ((self.beta1 * I1 + self.beta2 * I2 + self.beta3 * I3) * self.C * (V * self.p + IV * self.p2) / self.N)  - (self.mu * (V + IV))
             TDC = DC1 + DC2 + DC3
             TC += self.stepsize * TDC
@@ -643,7 +643,6 @@ class SEIRMVEx():
         plt.plot(self.t, self.I3, color = "#FF7F00", label='I3')
         plt.plot(self.t, np.add(np.add(self.R, self.V), self.IV), color = "#05A515", label='R + IV + V')
         plt.xlim(self.t[0], self.t[-1])
-        #plt.ylim(0, RN)
         plt.legend()
         plt.xlabel('Time in days')
         plt.ylabel('Active cases')
@@ -654,7 +653,9 @@ class SEIRMVEx():
         plt.plot(self.t, self.Reff3, color = "#FF7F00", label='Variant 3')
         plt.axline((self.t[0], 1), (self.t[-1], 1), color = 'k', linestyle = '--')
         plt.xlim(self.t[0], self.t[-1])
-        #plt.ylim(0, math.ceil(np.amax(self.Reff)))
+        plt.ylim(0, 4)
+        plt.grid(color = '#A4A4A4', linestyle = '-', linewidth = 0.3) #only use when on display mode
+        plt.margins(x=0, y=0)
         plt.legend()
         plt.xlabel('Time in days')
         plt.ylabel('Effective Reproduction Number')
@@ -664,20 +665,28 @@ class SEIRMVEx():
         plt.plot(self.t, self.DC2, color = "#F50480", label='Variant 2')
         plt.plot(self.t, self.DC3, color = "#FF7F00", label='Variant 3')
         plt.xlim(self.t[0], self.t[-1])
-        #plt.ylim(0, RTDC)
+        plt.ylim(0, 7000)
         plt.legend()
-        #plt.xticks(self.monthspoints, self.monthslist) #only use when on display mode
+        plt.xticks(self.monthspoints, self.monthslist) #only use when on display mode
+        plt.grid(color = '#A4A4A4', linestyle = '-', linewidth = 0.3) #only use when on display mode
+        plt.margins(x=0, y=0)
         plt.xlabel('Time in days')
         plt.ylabel('Daily cases by Variant')
         print("Total Cases at end: DC1DC2DC3", np.sum(self.DC1) + np.sum(self.DC2) + np.sum(self.DC3))
 
         plot4 = plt.figure(4)
         plt.plot(self.t, self.TDC, color = "#9D009C", label='All Variants') #marker='o'
-        plt.plot(self.t, self.VDC, color = "#1A5803", label='VDC')
+        #plt.plot(self.t, self.VDC, color = "#1A5803", label='VDC')
         plt.xlim(self.t[0], self.t[-1])
-        #plt.ylim(0, RTDC)
+        plt.ylim(0, RTDC)
         plt.legend()
-        #plt.xticks(self.monthspoints, self.monthslist) #only use when on display mode
+        plt.text(30, 1300, "Wave 1: 1150") #Day 50
+        plt.text(210, 1900, "Wave 2: 1690") #Day 223
+        plt.text(300, 8600, "Wave 3: 8550") #Day 321
+        plt.text(450, 2300, "Final Date:\nJuly 22nd: 2000") #Day 506
+        plt.xticks(self.monthspoints, self.monthslist) #only use when on display mode
+        plt.grid(color = '#A4A4A4', linestyle = '-', linewidth = 0.3) #only use when on display mode
+        plt.margins(x=0, y=0)
         plt.xlabel('Time in days')
         plt.ylabel('Daily cases')
         print("Total Cases at end: TDC", np.sum(self.TDC))
@@ -685,9 +694,10 @@ class SEIRMVEx():
         plot5 = plt.figure(5)
         plt.plot(self.t, self.TC, color = "#C6BF00", label='All Variants')
         plt.xlim(self.t[0], self.t[-1])
-        #plt.ylim(0, RN)
         plt.legend()
-        #plt.xticks(self.monthspoints, self.monthslist) #only use when on display mode
+        plt.xticks(self.monthspoints, self.monthslist) #only use when on display mode
+        plt.grid(color = '#A4A4A4', linestyle = '-', linewidth = 0.3) #only use when on display mode
+        plt.margins(x=0, y=0)
         plt.xlabel('Time in days')
         plt.ylabel('Total cases')
         print("Total Cases at end: TC", self.TC[-1])
@@ -700,9 +710,8 @@ class SEIRMVEx():
         #        plt.axline((self.t[0] + i * 30, 0), (self.t[0] + i * 30, np.amax(self.TC)), color = 'k', linestyle = '--', label = self.monthslist[i + 3])
         plt.plot(self.t, self.TC, color = "#C6BF00", label='All Variants')
         plt.xlim(self.t[0], self.t[-1])
-        #plt.ylim(0, RN)
         plt.yscale("log")
-        #plt.xticks(self.monthspoints, self.monthslist) #only use when on display mode
+        plt.xticks(self.monthspoints, self.monthslist) #only use when on display mode
         plt.legend()
         plt.xlabel('Time in days')
         plt.ylabel('Total cases (Logarithmic)')
@@ -712,7 +721,6 @@ class SEIRMVEx():
         plt.plot(self.t, self.IV, color = "#C6BF00", label='IV')
         plt.plot(self.t, self.R, color = "#9D009C", label='R')
         plt.xlim(self.t[0], self.t[-1])
-        #plt.ylim(0, RN)
         plt.legend()
         plt.xlabel('Time in days')
         plt.ylabel('Vaccination Programme')
@@ -720,7 +728,10 @@ class SEIRMVEx():
         plot8 = plt.figure(8)
         plt.plot(self.t, self.Ckeeper, color = "#9D009C", label='C')
         plt.xlim(self.t[0], self.t[-1])
-        #plt.ylim(0, RN)
+        plt.xticks(self.monthspoints, self.monthslist) #only use when on display mode
+        plt.grid(color = '#A4A4A4', linestyle = '-', linewidth = 0.3) #only use when on display mode
+        plt.margins(x=0, y=0)
+        plt.ylim(0, 1)
         plt.legend()
         plt.xlabel('Time in days')
         plt.ylabel('Contact Rate')
@@ -733,6 +744,19 @@ class SEIRMVEx():
         plt.bar(Days, Variant1, 0.35, color = "#E70000", label='Variant 1')
         plt.bar(Days, Variant2, 0.35, bottom = Variant1, color = "#F50480", label='Variant 2')
         plt.bar(Days, Variant3, 0.35, bottom = Variant2, color = "#FF7F00", label='Variant 3')
+        plt.legend() 
+        plt.ylabel("Variant% of Total Cases")
+
+        plot10 = plt.figure(10)
+        plt.fill_between(self.t, (self.DC1) * 100 / self.TDC, 0, color = "#E70000", label = "Variant 1") 
+        plt.fill_between(self.t, (self.DC1 + self.DC2) * 100 / self.TDC, (self.DC1) * 100 / self.TDC, color = "#F50480", label = "Variant 2")
+        plt.fill_between(self.t,(self.DC1 + self.DC2 + self.DC3) * 100 / self.TDC,(self.DC1 + self.DC2) * 100 / self.TDC, color = "#FF7F00", label = "Variant 3")
+        plt.plot(np.array([288, 296]), np.array([50, 50]), color = 'k', linestyle = '--')
+        plt.text(270, 55, "Variant 2 50%") #Day 293
+        plt.plot(np.array([480, 488]), np.array([50, 50]), color = 'k', linestyle = '--')
+        plt.text(460, 55, "Variant 3 50%") #Day 483
+        plt.xticks(self.monthspoints, self.monthslist) #only use when on display mode
+        plt.margins(x=0, y=0)
         plt.legend() 
         plt.ylabel("Variant% of Total Cases")
 
@@ -960,37 +984,42 @@ t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Ref
 t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC = model3.reinitAdd(t, 396, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, 0, 0, 10, 0.16, Ckeeper, 157, 75000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
 #April
 t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC = model3.reinitAdd(t, 411, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, 0, 0, 20, 0.2, Ckeeper, 157, 85000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
-t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC = model3.reinitAdd(t, 426, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, 0, 0, 40, 0.25, Ckeeper, 157, 165000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
+t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC = model3.reinitAdd(t, 426, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, 0, 0, 40, 0.22, Ckeeper, 157, 165000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
 #May
-t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC = model3.reinitAdd(t, 435, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, 0, 0, 80, 0.25, Ckeeper, 157, 165000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
+t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC = model3.reinitAdd(t, 435, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, 0, 0, 80, 0.22, Ckeeper, 157, 165000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
 t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC = model3.reinitAdd(t, 440, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, 0, 0, 120, 0.25, Ckeeper, 157, 280000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
 t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC = model3.reinitAdd(t, 455, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, 0, 0, 150, 0.3, Ckeeper, 157, 95000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
 #June
-t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC = model3.reinitAdd(t, 485, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, 0, 0, 250, 0.35, Ckeeper, 157, 180000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
+t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC = model3.reinitAdd(t, 485, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, 0, 0, 200, 0.33, Ckeeper, 157, 180000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
 #July
-t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC = model3.reinitAdd(t, 507, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, 0, 0, 400, 0.6, Ckeeper, 157, 210000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
-t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC = model3.reinitAdd(t, 515, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, 0, 0, 500, 0.7, Ckeeper, 157, 210000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
-#August
-t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC = model3.reinitAdd(t, 545, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, 0, 0, 500, 0.7, Ckeeper, 157, 120000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
-#September
-t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC = model3.reinitAdd(t, 575, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, 0, 0, 600, 0.8, Ckeeper, 157, 90000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
-#October
-t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC = model3.reinitAdd(t, 605, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, 0, 0, 600, 0.8, Ckeeper, 157, 80000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
+t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC = model3.reinitAdd(t, 507, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, 0, 0, 250, 0.6, Ckeeper, 157, 210000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
+t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC = model3.reinitAdd(t, 515, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, 0, 0, 250, 0.62, Ckeeper, 157, 210000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
+##Future
+##August
+#t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC = model3.reinitAdd(t, 545, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, 0, 0, 500, 0.7, Ckeeper, 157, 120000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
+##September
+#t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC = model3.reinitAdd(t, 575, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, 0, 0, 600, 0.8, Ckeeper, 157, 90000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
+##October
+#t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC = model3.reinitAdd(t, 605, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, 0, 0, 600, 0.8, Ckeeper, 157, 80000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
 ##November
 #t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC = model3.reinitAdd(t, 635, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, 0, 0, 400, 0.6, Ckeeper, 157, 210000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
 ##December
 #t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC = model3.reinitAdd(t, 665, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, 0, 0, 400, 0.6, Ckeeper, 157, 210000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
 ##January
-#t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC = model3.reinitAdd(t, 696, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, 0, 0, 400, 0.6, Ckeeper, 157, 210000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
+#t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC = model3.reinitAdd(t, 696, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, 0, 0, 500, 0.6, Ckeeper, 157, 210000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
+##test
+#t, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC = model3.reinitAdd(t, 1200, N, S, E1, I1, E2, I2, E3, I3, R, IV, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, 0, 0, 500, 0.7, Ckeeper, 157, 90000, 0.9)#t, end, N, S, E1, I1, E2, I2, E3, I3, R, V, beta1, beta2, beta3, D, L, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, TC, deltaweek1, deltaweek2, deltaweek3, C, mupop, rhoweek, immunity
 
+#show difference in 1100000 and 850000 for non vaccinated, and 90% 92% 95% immunity
 print("Total Vaccinated:", V[-1] + IV[-1] + VDCkeeper)
 print("Total Not Vaccinated:", N - (V[-1] + IV[-1] + VDCkeeper))
 print("Susceptible left:", S[-1])
 print("Recovered left:", R[-1])
 print("Sum TDC:", np.sum(TDC))
+print("TC last:", TC[-1])
 print("Total Delta variant:", np.sum(DC3))
 print("Total Cases * 0.017120777:", TC[-1] * 0.017120777)
-print("Total Vaccinated Cases * 0.010712876:", np.sum(VDC) * 0.010712876)
+print("Total Vaccinated Cases * 0.003181724:", np.sum(VDC) * 0.003181724)
 print(f"Jun28 (483): Delta {DC3[483]*100/TDC[483]}% and Alpha {DC2[483]*100/TDC[483]}%")
 print(f"Jul12 (497): Delta {DC3[497]*100/TDC[497]}% and Alpha {DC2[497]*100/TDC[497]}%")
 print(f"Most Recent ({t[-1]}): Delta {DC3[-1]*100/TDC[-1]}% and Alpha {DC2[-1]*100/TDC[-1]}%")
