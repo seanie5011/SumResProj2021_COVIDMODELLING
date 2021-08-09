@@ -24,10 +24,13 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="module1.py">
+    <Compile Include="TestingCSVFiles.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="FinalModel.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SIRStressTesting.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="temporary.py">
