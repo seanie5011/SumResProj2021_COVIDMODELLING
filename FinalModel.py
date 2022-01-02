@@ -288,6 +288,7 @@ class SEIRMVEx():
         plt.xticks(self.monthspoints, self.monthslist) #only use when on display mode
         plt.grid(color = '#A4A4A4', linestyle = '-', linewidth = 0.3)
         plt.xlim(self.t[0], self.t[-1])
+        #plt.ylim(0, 7000)
         plt.legend()
         plt.xlabel('Time in days')
         plt.ylabel('Daily cases by Variant')
@@ -295,7 +296,6 @@ class SEIRMVEx():
         #Daily Cases
         plot4 = plt.figure(4)
         plt.plot(self.t, self.TDC, color = "#9D009C", label='All Cases') #marker='o'
-        plt.plot(self.t, self.VDC, color = "#1A5803", label='VDC') #amount of cases who were vaccinated
         plt.text(30, 1300, "Wave 1: 1150") #Day 50
         plt.text(210, 1900, "Wave 2: 1690") #Day 223
         plt.text(300, 8600, "Wave 3: 8550") #Day 321
@@ -303,6 +303,7 @@ class SEIRMVEx():
         plt.xticks(self.monthspoints, self.monthslist) #only use when on display mode
         plt.grid(color = '#A4A4A4', linestyle = '-', linewidth = 0.3)
         plt.xlim(self.t[0], self.t[-1])
+        #plt.ylim(0, 9000)
         plt.legend()
         plt.xlabel('Time in days')
         plt.ylabel('Daily cases')
@@ -314,6 +315,7 @@ class SEIRMVEx():
         plt.legend()
         plt.xticks(self.monthspoints, self.monthslist) #only use when on display mode
         plt.xlim(self.t[0], self.t[-1])
+        #plt.ylim(0, 620000)
         plt.grid(color = '#A4A4A4', linestyle = '-', linewidth = 0.3) 
         plt.xlabel('Time in days')
         plt.ylabel('Total cases')
@@ -350,7 +352,7 @@ class SEIRMVEx():
         plt.xticks(self.monthspoints, self.monthslist) #only use when on display mode
         plt.grid(color = '#A4A4A4', linestyle = '-', linewidth = 0.3) 
         plt.xlim(self.t[0], self.t[-1])
-        plt.ylim(0, 1)
+        #plt.ylim(0, 1)
         plt.legend()
         plt.xlabel('Time in days')
         plt.ylabel('Contact Rate')
@@ -395,6 +397,7 @@ class SEIRMVEx():
 
         plt.xticks(self.monthspoints, self.monthslist) #only use when on display mode
         plt.xlim(self.t[0], self.t[-1])
+        #plt.ylim(0, 120)
         plt.legend()
         plt.grid(color = '#A4A4A4', linestyle = '-', linewidth = 0.3) 
         plt.xlabel('Time in days')
@@ -493,17 +496,17 @@ if (rtf == "Y"):
 if (fut == "Y"):
     #--Future--#
     #August
-    t, N, S, E1, I1, E2, I2, E3, I3, R, VP, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, PDNoVO12, PDNoVU12, PDV = model.reinitAdd(t, 545, N, S, E1, I1, E2, I2, E3, I3, R, VP, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, PDNoVO12, PDNoVU12, PDV, 0, 0, 375, 0.55, Ckeeper, 157, 150000, 0.9, 75, 22, 3)
+    t, N, S, E1, I1, E2, I2, E3, I3, R, VP, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, PDNoVO12, PDNoVU12, PDV = model.reinitAdd(t, 545, N, S, E1, I1, E2, I2, E3, I3, R, VP, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, PDNoVO12, PDNoVU12, PDV, 0, 0, 360, 0.55, Ckeeper, 157, 150000, 0.9, 75, 22, 3)
     #September
-    t, N, S, E1, I1, E2, I2, E3, I3, R, VP, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, PDNoVO12, PDNoVU12, PDV  = model.reinitAdd(t, 575, N, S, E1, I1, E2, I2, E3, I3, R, VP, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, PDNoVO12, PDNoVU12, PDV, 0, 0, 450, 0.65, Ckeeper, 157, 130000, 0.9, 78, 18.8, 3.2)
-    #October
-    t, N, S, E1, I1, E2, I2, E3, I3, R, VP, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, PDNoVO12, PDNoVU12, PDV  = model.reinitAdd(t, 605, N, S, E1, I1, E2, I2, E3, I3, R, VP, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, PDNoVO12, PDNoVU12, PDV, 0, 0, 480, 0.7, Ckeeper, 157, 115000, 0.9, 80, 16.5, 3.5)
-    #November
-    t, N, S, E1, I1, E2, I2, E3, I3, R, VP, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, PDNoVO12, PDNoVU12, PDV  = model.reinitAdd(t, 635, N, S, E1, I1, E2, I2, E3, I3, R, VP, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, PDNoVO12, PDNoVU12, PDV, 0, 0, 500, 0.75, Ckeeper, 157, 100000, 0.9, 75, 21.2, 3.8)
-    #December
-    t, N, S, E1, I1, E2, I2, E3, I3, R, VP, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, PDNoVO12, PDNoVU12, PDV  = model.reinitAdd(t, 665, N, S, E1, I1, E2, I2, E3, I3, R, VP, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, PDNoVO12, PDNoVU12, PDV, 0, 0, 1000, 0.8, Ckeeper, 157, 95000, 0.9, 70, 25.9, 4.1)
-    #January 2022
-    t, N, S, E1, I1, E2, I2, E3, I3, R, VP, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, PDNoVO12, PDNoVU12, PDV  = model.reinitAdd(t, 696, N, S, E1, I1, E2, I2, E3, I3, R, VP, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, PDNoVO12, PDNoVU12, PDV, 0, 0, 800, 0.7, Ckeeper, 157, 90000, 0.9, 60, 35, 5)
+    t, N, S, E1, I1, E2, I2, E3, I3, R, VP, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, PDNoVO12, PDNoVU12, PDV  = model.reinitAdd(t, 575, N, S, E1, I1, E2, I2, E3, I3, R, VP, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, PDNoVO12, PDNoVU12, PDV, 0, 0, 360, 0.55, Ckeeper, 157, 100000, 0.9, 78, 18.8, 3.2)
+    ##October
+    #t, N, S, E1, I1, E2, I2, E3, I3, R, VP, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, PDNoVO12, PDNoVU12, PDV  = model.reinitAdd(t, 605, N, S, E1, I1, E2, I2, E3, I3, R, VP, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, PDNoVO12, PDNoVU12, PDV, 0, 0, 480, 0.7, Ckeeper, 157, 115000, 0.9, 80, 16.5, 3.5)
+    ##November
+    #t, N, S, E1, I1, E2, I2, E3, I3, R, VP, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, PDNoVO12, PDNoVU12, PDV  = model.reinitAdd(t, 635, N, S, E1, I1, E2, I2, E3, I3, R, VP, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, PDNoVO12, PDNoVU12, PDV, 0, 0, 500, 0.75, Ckeeper, 157, 100000, 0.9, 75, 21.2, 3.8)
+    ##December
+    #t, N, S, E1, I1, E2, I2, E3, I3, R, VP, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, PDNoVO12, PDNoVU12, PDV  = model.reinitAdd(t, 665, N, S, E1, I1, E2, I2, E3, I3, R, VP, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, PDNoVO12, PDNoVU12, PDV, 0, 0, 1000, 0.8, Ckeeper, 157, 95000, 0.9, 70, 25.9, 4.1)
+    ##January 2022
+    #t, N, S, E1, I1, E2, I2, E3, I3, R, VP, V, rhokeeper, Ckeeper, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, PDNoVO12, PDNoVU12, PDV  = model.reinitAdd(t, 696, N, S, E1, I1, E2, I2, E3, I3, R, VP, V, rhokeeper, 3.332/10, 5.35/10, 9.095/10, 10, 4.7, Reff1, Reff2, Reff3, DC1, DC2, DC3, TDC, VDC, VDCkeeper, TC, PDNoVO12, PDNoVU12, PDV, 0, 0, 800, 0.7, Ckeeper, 157, 90000, 0.9, 60, 35, 5)
 
 #--info--#
 print("Total Population:", N)
