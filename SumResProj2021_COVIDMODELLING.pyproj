@@ -13,7 +13,7 @@
     <Name>SumResProj2021_COVIDMODELLING</Name>
     <RootNamespace>TestingPyDSTool</RootNamespace>
     <SuppressConfigureTestFrameworkPrompt>true</SuppressConfigureTestFrameworkPrompt>
-    <InterpreterId>Global|VisualStudio|Contains NumPy, SciPy, and PyDSTool</InterpreterId>
+    <InterpreterId>Global|VisualStudio|Enviro with NumPy, SciPy, PyDSTool</InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -68,7 +68,7 @@
     <Compile Include="TestingPyDSTool.py" />
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="Global|VisualStudio|Contains NumPy, SciPy, and PyDSTool" />
+    <InterpreterReference Include="Global|VisualStudio|Enviro with NumPy, SciPy, PyDSTool" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
